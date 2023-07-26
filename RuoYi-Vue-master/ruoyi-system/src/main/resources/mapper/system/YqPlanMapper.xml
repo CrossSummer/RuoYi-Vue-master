@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.YqPlanMapper">
+    
+    <resultMap type="YqPlan" id="YqPlanResult">
+        <result property="planId"    column="plan_id"    />
+        <result property="planName"    column="plan_name"    />
+        <result property="receiptDate"    column="receipt_date"    />
+        <result property="fingerprintDatetime"    column="fingerprint_datetime"    />
+        <result property="travelDate"    column="travel_date"    />
+        <result property="visaCountry"    column="visa_country"    />
+        <result property="submitDate"    column="submit_date"    />
+        <result property="submitCity"    column="submit_city"    />
+        <result property="salePerson"    column="sale_person"    />
+        <result property="custom"    column="custom"    />
+        <result property="guestEq"    column="guest_eq"    />
+        <result property="guestNum"    column="guest_num"    />
+        <result property="account"    column="account"    />
+        <result property="notes"    column="notes"    />
+        <result property="plantype"    column="plantype"    />
+
+        <result property="planCost"    column="plan_cost"    />
+        <result property="planIncome"    column="plan_income"    />
+        <result property="planProfit"    column="plan_profit"    />
+    </resultMap>
+
+    <resultMap id="YqPlanYqGuestResult" type="YqPlan" extends="YqPlanResult">
+        <collection property="yqGuestList" notNullColumn="sub_guest_id" javaType="java.util.List" resultMap="YqGuestResult" />
+    </resultMap>
+
+    <resultMap type="YqGuest" id="YqGuestResult">
+        <result property="guestId"    column="sub_guest_id"    />
+        <result property="ppChinesename"    column="sub_pp_chinesename"    />
+        <result property="ppFamilyname"    column="sub_pp_familyname"    />
+        <result property="ppFirstname"    column="sub_pp_firstname"    />
+        <result property="ppGender"    column="sub_pp_gender"    />
+        <result property="ppBirthDate"    column="sub_pp_birth_date"    />
+        <result property="ppBirthPlace"    column="sub_pp_birth_place"    />
+        <result property="ppNationality"    column="sub_pp_nationality"    />
+        <result property="guestPhone"    column="sub_guest_phone"    />
+        <result property="guestEmail"    column="sub_guest_email"    />
+        <result property="ppCountryCode"    column="sub_pp_country_code"    />
+        <result property="ppNo"    column="sub_pp_no"    />
+        <result property="ppType"    column="sub_pp_type"    />
+        <result property="ppIssueDate"    column="sub_pp_issue_date"    />
+        <result property="ppIssuePlace"    column="sub_pp_issue_place"    />
+        <result property="ppExpireDate"    column="sub_pp_expire_date"    />
+        <result property="ppIssueOrganization"    column="sub_pp_issue_organization"    />
+        <result property="plan"    column="sub_plan"    />
+
+        <result property="guestCost"    column="sub_guest_cost"    />
+        <result property="guestIncome"    column="sub_guest_income"    />
+        <result property="guestProfit"    column="sub_guest_profit"    />
+    </resultMap>
+
+    <!--SELECT * FROM yq_plan p WHERE LEFT(p.`fingerprint_datetime`,10) < CURDATE();-->
+
+    <sql id="selectYqPlanVo">
+        select plan_id, plan_name, receipt_date, fingerprint_datetime, travel_date, visa_country, submit_date,
+               submit_city, sale_person, custom, guest_eq, guest_num, account, notes,plantype,
+               plan_cost, plan_income, plan_profit from yq_plan
+    </sql>
+
+    <select id="selectYqPlanList" parameterType="YqPlan" resultMap="YqPlanResult">
+        <include refid="selectYqPlanVo"/>
+        <where>  
+            <if test="planName != null  and planName != ''"> and plan_name like concat('%', #{planName}, '%')</if>
+            <if test="receiptDate != null "> and receipt_date = #{receiptDate}</if>
+            <if test="fingerprintDatetime != null "> and fingerprint_datetime = #{fingerprintDatetime}</if>
+            <if test="travelDate != null "> and travel_date = #{travelDate}</if>
+            <if test="visaCountry != null  and visaCountry != ''"> and visa_country = #{visaCountry}</if>
+            <if test="submitDate != null "> and submit_date = #{submitDate}</if>
+            <if test="submitCity != null  and submitCity != ''"> and submit_city = #{submitCity}</if>
+            <if test="salePerson != null  and salePerson != ''"> and sale_person = #{salePerson}</if>
+            <if test="custom != null  and custom != ''"> and custom = #{custom}</if>
+            <if test="guestEq != null  and guestEq != ''"> and guest_eq = #{guestEq}</if>
+            <if test="guestNum != null "> and guest_num = #{guestNum}</if>
+            <if test="account != null  and account != ''"> and account = #{account}</if>
+            <if test="notes != null  and notes != ''"> and notes = #{notes}</if>
+            <if test="plantype != null  and plantype != ''"> and plantype = #{plantype}</if>
+
+            <if test="planCost != null  and planCost != ''"> and plan_cost = #{planCost}</if>
+            <if test="planIncome != null  and planIncome != ''"> and plan_income = #{planIncome}</if>
+            <if test="planProfit != null  and planProfit != ''"> and plan_profit = #{planProfit}</if>
+        </where>
+    </select>
+    
+    <select id="selectYqPlanByPlanId" parameterType="Long" resultMap="YqPlanYqGuestResult">
+        select a.plan_id, a.plan_name, a.receipt_date, a.fingerprint_datetime, a.travel_date, a.visa_country,
+               a.submit_date, a.submit_city, a.sale_person, a.custom, a.guest_eq, a.guest_num, a.account,
+               a.notes, a.plantype, a.plan_cost, a.plan_income, a.plan_profit,
+               b.guest_id as sub_guest_id, b.pp_chinesename as sub_pp_chinesename, b.pp_familyname as sub_pp_familyname,
+               b.pp_firstname as sub_pp_firstname, b.pp_gender as sub_pp_gender, b.pp_birth_date as sub_pp_birth_date,
+               b.pp_birth_place as sub_pp_birth_place, b.pp_nationality as sub_pp_nationality,
+               b.guest_phone as sub_guest_phone, b.guest_email as sub_guest_email, b.pp_country_code as sub_pp_country_code,
+               b.pp_no as sub_pp_no, b.pp_type as sub_pp_type, b.pp_issue_date as sub_pp_issue_date,
+               b.pp_issue_place as sub_pp_issue_place, b.pp_expire_date as sub_pp_expire_date,
+               b.pp_issue_organization as sub_pp_issue_organization, b.plan as sub_plan,
+               b.guest_cost as sub_guest_cost, b.guest_income as sub_guest_income, b.guest_profit as sub_guest_profit
+        from yq_plan a
+        left join yq_guest b on b.plan = a.plan_id
+        where a.plan_id = #{planId}
+    </select>
+        
+    <insert id="insertYqPlan" parameterType="YqPlan" useGeneratedKeys="true" keyProperty="planId">
+        insert into yq_plan
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="planName != null and planName != ''">plan_name,</if>
+            <if test="receiptDate != null">receipt_date,</if>
+            <if test="fingerprintDatetime != null">fingerprint_datetime,</if>
+            <if test="travelDate != null">travel_date,</if>
+            <if test="visaCountry != null">visa_country,</if>
+            <if test="submitDate != null">submit_date,</if>
+            <if test="submitCity != null">submit_city,</if>
+            <if test="salePerson != null">sale_person,</if>
+            <if test="custom != null">custom,</if>
+            <if test="guestEq != null">guest_eq,</if>
+            <if test="guestNum != null">guest_num,</if>
+            <if test="account != null">account,</if>
+            <if test="notes != null">notes,</if>
+            <if test="plantype != null">plantype,</if>
+
+            <if test="planCost != null">plan_cost,</if>
+            <if test="planIncome != null">plan_income,</if>
+            <if test="planProfit != null">plan_profit,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="planName != null and planName != ''">#{planName},</if>
+            <if test="receiptDate != null">#{receiptDate},</if>
+            <if test="fingerprintDatetime != null">#{fingerprintDatetime},</if>
+            <if test="travelDate != null">#{travelDate},</if>
+            <if test="visaCountry != null">#{visaCountry},</if>
+            <if test="submitDate != null">#{submitDate},</if>
+            <if test="submitCity != null">#{submitCity},</if>
+            <if test="salePerson != null">#{salePerson},</if>
+            <if test="custom != null">#{custom},</if>
+            <if test="guestEq != null">#{guestEq},</if>
+            <if test="guestNum != null">#{guestNum},</if>
+            <if test="account != null">#{account},</if>
+            <if test="notes != null">#{notes},</if>
+            <if test="plantype != null">#{plantype},</if>
+
+            <if test="planCost != null">planCost,</if>
+            <if test="planIncome != null">planIncome,</if>
+            <if test="planProfit != null">planProfit,</if>
+         </trim>
+    </insert>
+
+    <update id="updateYqPlan" parameterType="YqPlan">
+        update yq_plan
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="planName != null and planName != ''">plan_name = #{planName},</if>
+            <if test="receiptDate != null">receipt_date = #{receiptDate},</if>
+            <if test="fingerprintDatetime != null">fingerprint_datetime = #{fingerprintDatetime},</if>
+            <if test="travelDate != null">travel_date = #{travelDate},</if>
+            <if test="visaCountry != null">visa_country = #{visaCountry},</if>
+            <if test="submitDate != null">submit_date = #{submitDate},</if>
+            <if test="submitCity != null">submit_city = #{submitCity},</if>
+            <if test="salePerson != null">sale_person = #{salePerson},</if>
+            <if test="custom != null">custom = #{custom},</if>
+            <if test="guestEq != null">guest_eq = #{guestEq},</if>
+            <if test="guestNum != null">guest_num = #{guestNum},</if>
+            <if test="account != null">account = #{account},</if>
+            <if test="notes != null">notes = #{notes},</if>
+            <if test="plantype != null">plantype = #{plantype},</if>
+
+            <if test="planCost != null">plan_cost = #{planCost},</if>
+            <if test="planIncome != null">plan_income = #{planIncome},</if>
+            <if test="planProfit != null">plan_profit = #{planProfit},</if>
+        </trim>
+        where plan_id = #{planId}
+    </update>
+
+    <delete id="deleteYqPlanByPlanId" parameterType="Long">
+        delete from yq_plan where plan_id = #{planId}
+    </delete>
+
+    <delete id="deleteYqPlanByPlanIds" parameterType="String">
+        delete from yq_plan where plan_id in 
+        <foreach item="planId" collection="array" open="(" separator="," close=")">
+            #{planId}
+        </foreach>
+    </delete>
+    
+    <delete id="deleteYqGuestByPlans" parameterType="String">
+        delete from yq_guest where plan in 
+        <foreach item="plan" collection="array" open="(" separator="," close=")">
+            #{plan}
+        </foreach>
+    </delete>
+
+    <delete id="deleteYqGuestByPlan" parameterType="Long">
+        delete from yq_guest where plan = #{plan}
+    </delete>
+
+    <insert id="batchYqGuest">
+        insert into yq_guest( guest_id, pp_chinesename, pp_familyname, pp_firstname, pp_gender, pp_birth_date,
+                             pp_birth_place, pp_nationality, guest_phone, guest_email, pp_country_code,
+                             pp_no, pp_type, pp_issue_date, pp_issue_place, pp_expire_date, pp_issue_organization,
+                             plan, guest_cost, guest_income, guest_profit) values
+		<foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.guestId}, #{item.ppChinesename}, #{item.ppFamilyname}, #{item.ppFirstname}, #{item.ppGender},
+             #{item.ppBirthDate}, #{item.ppBirthPlace}, #{item.ppNationality}, #{item.guestPhone}, #{item.guestEmail},
+             #{item.ppCountryCode}, #{item.ppNo}, #{item.ppType}, #{item.ppIssueDate}, #{item.ppIssuePlace},
+             #{item.ppExpireDate}, #{item.ppIssueOrganization}, #{item.plan},
+             #{item.guestCost}, #{item.guestIncome}, #{item.guestProfit})
+        </foreach>
+    </insert>
+</mapper>

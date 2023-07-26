@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.YqMoneyMapper">
+    
+    <resultMap type="YqMoney" id="YqMoneyResult">
+        <result property="moneyId"    column="money_id"    />
+        <result property="guestId"    column="guest_id"    />
+        <result property="guesetPlan"    column="gueset_plan"    />
+        <result property="guestCost"    column="guest_cost"    />
+        <result property="guestIncome"    column="guest_income"    />
+        <result property="guestProfit"    column="guest_profit"    />
+    </resultMap>
+
+    <resultMap id="YqMoneyYqGuestResult" type="YqMoney" extends="YqMoneyResult">
+        <collection property="yqGuestList" notNullColumn="sub_guest_id" javaType="java.util.List" resultMap="YqGuestResult" />
+    </resultMap>
+
+    <resultMap type="YqGuest" id="YqGuestResult">
+        <result property="guestId"    column="sub_guest_id"    />
+        <result property="ppChinesename"    column="sub_pp_chinesename"    />
+        <result property="ppFamilyname"    column="sub_pp_familyname"    />
+        <result property="ppFirstname"    column="sub_pp_firstname"    />
+        <result property="ppGender"    column="sub_pp_gender"    />
+        <result property="ppBirthDate"    column="sub_pp_birth_date"    />
+        <result property="ppBirthPlace"    column="sub_pp_birth_place"    />
+        <result property="ppNationality"    column="sub_pp_nationality"    />
+        <result property="guestPhone"    column="sub_guest_phone"    />
+        <result property="guestEmail"    column="sub_guest_email"    />
+        <result property="ppCountryCode"    column="sub_pp_country_code"    />
+        <result property="ppNo"    column="sub_pp_no"    />
+        <result property="ppType"    column="sub_pp_type"    />
+        <result property="ppIssueDate"    column="sub_pp_issue_date"    />
+        <result property="ppIssuePlace"    column="sub_pp_issue_place"    />
+        <result property="ppExpireDate"    column="sub_pp_expire_date"    />
+        <result property="ppIssueOrganization"    column="sub_pp_issue_organization"    />
+        <result property="plan"    column="sub_plan"    />
+    </resultMap>
+
+    <sql id="selectYqMoneyVo">
+        select money_id, guest_id, gueset_plan, guest_cost, guest_income, guest_profit from yq_money
+    </sql>
+
+    <select id="selectYqMoneyList" parameterType="YqMoney" resultMap="YqMoneyResult">
+        <include refid="selectYqMoneyVo"/>
+        <where>  
+            <if test="guestId != null "> and guest_id = #{guestId}</if>
+            <if test="guesetPlan != null "> and gueset_plan = #{guesetPlan}</if>
+            <if test="guestCost != null  and guestCost != ''"> and guest_cost = #{guestCost}</if>
+            <if test="guestIncome != null  and guestIncome != ''"> and guest_income = #{guestIncome}</if>
+            <if test="guestProfit != null  and guestProfit != ''"> and guest_profit = #{guestProfit}</if>
+        </where>
+    </select>
+    
+    <select id="selectYqMoneyByMoneyId" parameterType="Integer" resultMap="YqMoneyYqGuestResult">
+        select a.money_id, a.guest_id, a.gueset_plan, a.guest_cost, a.guest_income, a.guest_profit,
+ b.guest_id as sub_guest_id, b.pp_chinesename as sub_pp_chinesename, b.pp_familyname as sub_pp_familyname, b.pp_firstname as sub_pp_firstname, b.pp_gender as sub_pp_gender, b.pp_birth_date as sub_pp_birth_date, b.pp_birth_place as sub_pp_birth_place, b.pp_nationality as sub_pp_nationality, b.guest_phone as sub_guest_phone, b.guest_email as sub_guest_email, b.pp_country_code as sub_pp_country_code, b.pp_no as sub_pp_no, b.pp_type as sub_pp_type, b.pp_issue_date as sub_pp_issue_date, b.pp_issue_place as sub_pp_issue_place, b.pp_expire_date as sub_pp_expire_date, b.pp_issue_organization as sub_pp_issue_organization, b.plan as sub_plan
+        from yq_money a
+        left join yq_guest b on b.guest_id = a.money_id
+        where a.money_id = #{moneyId}
+    </select>
+        
+    <insert id="insertYqMoney" parameterType="YqMoney" useGeneratedKeys="true" keyProperty="moneyId">
+        insert into yq_money
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="guestId != null">guest_id,</if>
+            <if test="guesetPlan != null">gueset_plan,</if>
+            <if test="guestCost != null">guest_cost,</if>
+            <if test="guestIncome != null">guest_income,</if>
+            <if test="guestProfit != null">guest_profit,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="guestId != null">#{guestId},</if>
+            <if test="guesetPlan != null">#{guesetPlan},</if>
+            <if test="guestCost != null">#{guestCost},</if>
+            <if test="guestIncome != null">#{guestIncome},</if>
+            <if test="guestProfit != null">#{guestProfit},</if>
+         </trim>
+    </insert>
+
+    <update id="updateYqMoney" parameterType="YqMoney">
+        update yq_money
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="guestId != null">guest_id = #{guestId},</if>
+            <if test="guesetPlan != null">gueset_plan = #{guesetPlan},</if>
+            <if test="guestCost != null">guest_cost = #{guestCost},</if>
+            <if test="guestIncome != null">guest_income = #{guestIncome},</if>
+            <if test="guestProfit != null">guest_profit = #{guestProfit},</if>
+        </trim>
+        where money_id = #{moneyId}
+    </update>
+
+    <delete id="deleteYqMoneyByMoneyId" parameterType="Integer">
+        delete from yq_money where money_id = #{moneyId}
+    </delete>
+
+    <delete id="deleteYqMoneyByMoneyIds" parameterType="String">
+        delete from yq_money where money_id in 
+        <foreach item="moneyId" collection="array" open="(" separator="," close=")">
+            #{moneyId}
+        </foreach>
+    </delete>
+    
+    <delete id="deleteYqGuestByGuestIds" parameterType="String">
+        delete from yq_guest where guest_id in 
+        <foreach item="guestId" collection="array" open="(" separator="," close=")">
+            #{guestId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteYqGuestByGuestId" parameterType="Integer">
+        delete from yq_guest where guest_id = #{guestId}
+    </delete>
+
+    <insert id="batchYqGuest">
+        insert into yq_guest( guest_id, pp_chinesename, pp_familyname, pp_firstname, pp_gender, pp_birth_date, pp_birth_place, pp_nationality, guest_phone, guest_email, pp_country_code, pp_no, pp_type, pp_issue_date, pp_issue_place, pp_expire_date, pp_issue_organization, plan) values
+		<foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.guestId}, #{item.ppChinesename}, #{item.ppFamilyname}, #{item.ppFirstname}, #{item.ppGender}, #{item.ppBirthDate}, #{item.ppBirthPlace}, #{item.ppNationality}, #{item.guestPhone}, #{item.guestEmail}, #{item.ppCountryCode}, #{item.ppNo}, #{item.ppType}, #{item.ppIssueDate}, #{item.ppIssuePlace}, #{item.ppExpireDate}, #{item.ppIssueOrganization}, #{item.plan})
+        </foreach>
+    </insert>
+</mapper>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysItemMapper">
+    
+    <resultMap type="SysItem" id="SysItemResult">
+        <result property="itemNo"    column="item_no"    />
+        <result property="familyName"    column="family_name"    />
+        <result property="firstName"    column="first_name"    />
+        <result property="chineseName"    column="chinese_name"    />
+        <result property="sex"    column="sex"    />
+        <result property="dateOfBirth"    column="date_of_birth"    />
+        <result property="passportNo"    column="passport_no"    />
+        <result property="placeOfBirth"    column="place_of_birth"    />
+        <result property="placeOfIssue"    column="place_of_issue"    />
+        <result property="dateOfIssue"    column="date_of_issue"    />
+        <result property="dateOfExpire"    column="date_of_expire"    />
+    </resultMap>
+
+    <sql id="selectSysItemVo">
+        select item_no, family_name, first_name, chinese_name, sex, date_of_birth, passport_no, place_of_birth, place_of_issue, date_of_issue, date_of_expire from sys_item
+    </sql>
+
+    <select id="selectSysItemList" parameterType="SysItem" resultMap="SysItemResult">
+        <include refid="selectSysItemVo"/>
+        <where>  
+            <if test="familyName != null  and familyName != ''"> and family_name like concat('%', #{familyName}, '%')</if>
+            <if test="firstName != null  and firstName != ''"> and first_name like concat('%', #{firstName}, '%')</if>
+            <if test="chineseName != null  and chineseName != ''"> and chinese_name like concat('%', #{chineseName}, '%')</if>
+            <if test="sex != null  and sex != ''"> and sex = #{sex}</if>
+            <if test="dateOfBirth != null "> and date_of_birth = #{dateOfBirth}</if>
+            <if test="passportNo != null  and passportNo != ''"> and passport_no = #{passportNo}</if>
+            <if test="placeOfBirth != null  and placeOfBirth != ''"> and place_of_birth = #{placeOfBirth}</if>
+            <if test="placeOfIssue != null  and placeOfIssue != ''"> and place_of_issue = #{placeOfIssue}</if>
+            <if test="dateOfIssue != null "> and date_of_issue = #{dateOfIssue}</if>
+            <if test="dateOfExpire != null "> and date_of_expire = #{dateOfExpire}</if>
+        </where>
+    </select>
+    
+    <select id="selectSysItemByItemNo" parameterType="Long" resultMap="SysItemResult">
+        <include refid="selectSysItemVo"/>
+        where item_no = #{itemNo}
+    </select>
+        
+    <insert id="insertSysItem" parameterType="SysItem" useGeneratedKeys="true" keyProperty="itemNo">
+        insert into sys_item
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="familyName != null">family_name,</if>
+            <if test="firstName != null">first_name,</if>
+            <if test="chineseName != null">chinese_name,</if>
+            <if test="sex != null">sex,</if>
+            <if test="dateOfBirth != null">date_of_birth,</if>
+            <if test="passportNo != null">passport_no,</if>
+            <if test="placeOfBirth != null">place_of_birth,</if>
+            <if test="placeOfIssue != null">place_of_issue,</if>
+            <if test="dateOfIssue != null">date_of_issue,</if>
+            <if test="dateOfExpire != null">date_of_expire,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="familyName != null">#{familyName},</if>
+            <if test="firstName != null">#{firstName},</if>
+            <if test="chineseName != null">#{chineseName},</if>
+            <if test="sex != null">#{sex},</if>
+            <if test="dateOfBirth != null">#{dateOfBirth},</if>
+            <if test="passportNo != null">#{passportNo},</if>
+            <if test="placeOfBirth != null">#{placeOfBirth},</if>
+            <if test="placeOfIssue != null">#{placeOfIssue},</if>
+            <if test="dateOfIssue != null">#{dateOfIssue},</if>
+            <if test="dateOfExpire != null">#{dateOfExpire},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysItem" parameterType="SysItem">
+        update sys_item
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="familyName != null">family_name = #{familyName},</if>
+            <if test="firstName != null">first_name = #{firstName},</if>
+            <if test="chineseName != null">chinese_name = #{chineseName},</if>
+            <if test="sex != null">sex = #{sex},</if>
+            <if test="dateOfBirth != null">date_of_birth = #{dateOfBirth},</if>
+            <if test="passportNo != null">passport_no = #{passportNo},</if>
+            <if test="placeOfBirth != null">place_of_birth = #{placeOfBirth},</if>
+            <if test="placeOfIssue != null">place_of_issue = #{placeOfIssue},</if>
+            <if test="dateOfIssue != null">date_of_issue = #{dateOfIssue},</if>
+            <if test="dateOfExpire != null">date_of_expire = #{dateOfExpire},</if>
+        </trim>
+        where item_no = #{itemNo}
+    </update>
+
+    <delete id="deleteSysItemByItemNo" parameterType="Long">
+        delete from sys_item where item_no = #{itemNo}
+    </delete>
+
+    <delete id="deleteSysItemByItemNos" parameterType="String">
+        delete from sys_item where item_no in 
+        <foreach item="itemNo" collection="array" open="(" separator="," close=")">
+            #{itemNo}
+        </foreach>
+    </delete>
+</mapper>
